@@ -60,7 +60,61 @@ export const useProductStore = create((set) => ({
     }
   },
 
+  deleteProduct: async (id) => {
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text(); // try to read error if any
+        return {
+          success: false,
+          message: `Server error: ${errorText || res.statusText}`,
+        };
+      }
+
+      const data = await res.json();
+      set((state) => ({
+        products: state.products.filter((product) => product._id !== id),
+      }));
+      return { success: true, message: "Product deleted successfully" };
+    } catch (err) {
+      return {
+        success: false,
+        message: "Failed to connect to server or invalid response",
+      };
+    }
 
 
-
+},  updateProduct: async (id, updatedProduct) => {    
+    try {                    
+      const res = await fetch(`/api/products/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedProduct),
+      });
+      if (!res.ok) {
+        const errorText = await res.text(); // try to read error if any
+        return {
+          success: false,
+          message: `Server error: ${errorText || res.statusText}`,
+        };
+      }
+      const data = await res.json();        
+      set((state) => ({
+        products: state.products.map((product) =>
+          product._id === id ? { ...product, ...data.data } : product
+        ),
+      }));
+      return { success: true, message: "Product updated successfully" };
+    } catch (err) {
+      return {
+        success: false,
+        message: "Failed to connect to server or invalid response",
+      };
+    }
+  },
 }));
