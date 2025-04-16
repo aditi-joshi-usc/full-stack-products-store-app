@@ -14,7 +14,7 @@ app.use("/api/products", productRoutes); // Mount the product routes on the /api
 app.listen(PORT, () => {
     
     connectDB();
-    console.log("Server is running on port 5000 ");
+    console.log("Server is running on port", PORT);
 }); 
 
 
